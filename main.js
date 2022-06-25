@@ -1,12 +1,12 @@
 "use strict";
 
-var tickObject = new Game();
+var tickObject = new Level();
 
+// Appeller tickObject.tick() en boucle.
 function main() {
 	// Boucle
 	var startTime = Date.now();
 	function loop() {
-		console.log("tick");
 		tickObject.tick();
 		var endTime = Date.now();
 	

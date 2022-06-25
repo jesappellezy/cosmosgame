@@ -1,13 +1,22 @@
 "use strict";
 
+/**
+ * Représente l'interface utilisateur (je sais pas si c'est le bon mot mdr)
+ * Permet de dessiner sur le canvas et de recevoir les entrées clavier.
+ */
 class Interface {
-	static CANVAS = document.getElementById("canvas");
 
+	/**
+	 * Gère les entrées clavier.
+	 * Par exemple, si on veut savoir si la touche droite est actuellement pressée, on fait :
+	 *   Interface.Input.rightPressed
+	 */
 	static Input = class {
-		rightPressed = false;
+		rightPressed = false; // ... private
 		leftPressed = false;
 		upPressed = false;
 
+		// A appeler une seule fois pour préparer les évènements pour recevoir chaque entrée.
 		static init() {
 			function set(key, value) {
 				switch(key) {
@@ -33,52 +42,78 @@ class Interface {
 		}
 	}
 
-	static width = 600;
-	static height = 400;
-	static visibleObjects = [];
-	static sorted = true;
+	/**
+	 * Gère le dessin sur le canvas.
+	 */
+	static Output = class {
+		// Elément HTML du canvas
+		static CANVAS = document.getElementById("canvas");
 
-	static _getContext() {
-		var ctx = Interface.CANVAS.getContext('2d');
-		ctx.fillRectTrunc = (a,b,c,d) => {
-			ctx.fillRect(Math.round(a), Math.round(b), Math.round(c), Math.round(d));
-		};
-		return ctx;
-	}
+		// Taille de l'affichage (à rendre responsive)
+		static width = 600;
+		static height = 400;
+		// Liste des objets visibles dans un niveau (ils doivent avoir une fonction `draw()` qui reçcoit un argument pour le contexte du canvas)
+		static visibleObjects = [];
+		// Si les objets sont déjà mis dans l'ordre selon le Z (voir README.md)
+		static sorted = true;
 
-	static _sort() {
-		Interface.visibleObjects.sort((obj1, obj2) => {
-			return obj2.getZ() - obj1.getZ();
-		});
-		Interface.sorted = true;
-	}
+		/**
+		 * Permet de recevoir le contexte du canvas
+		 */ 
+		static _getContext() {
+			var ctx = Interface.Output.CANVAS.getContext('2d');
+			ctx.fillRectTrunc = (a,b,c,d) => {
+				ctx.fillRect(Math.round(a), Math.round(b), Math.round(c), Math.round(d));
+			};
+			return ctx;
+		}
 
-	static draw(cameraX, cameraY) {
-		var offsetX = cameraX - Interface.width / 2;
-		var offsetY = cameraY - Interface.height / 2;
+		/**
+		 * Met les objets dans l'ordre selon le Z (voir README.md)
+		 */
+		static _sort() {
+			Interface.Output.visibleObjects.sort((obj1, obj2) => {
+				return obj2.getZ() - obj1.getZ();
+			});
+			Interface.Output.sorted = true;
+		}
 
-		Interface.CANVAS.width = Interface.width;
-		Interface.CANVAS.height = Interface.height;
+		/**
+		 * Dessine tous les objets visibles dans un niveau.
+		 */
+		static draw(cameraX, cameraY) {
+			var offsetX = cameraX - Interface.Output.width / 2;
+			var offsetY = cameraY - Interface.Output.height / 2;
 
-		if(!Interface.sorted)
-			Interface._sort();
+			Interface.Output.CANVAS.width = Interface.Output.width;
+			Interface.Output.CANVAS.height = Interface.Output.height;
 
-		var ctx = Interface._getContext();
-		ctx.fillColor = "#000000";
-		ctx.fillRect(0, 0, Interface.width, Interface.height);
-		Interface.visibleObjects.forEach((obj) => {
-			obj.draw(ctx, offsetX, offsetY);
-		});
-	}
+			if(!Interface.Output.sorted)
+				Interface.Output._sort();
 
-	static addObject(obj) {
-		Interface.visibleObjects.push(obj);
-		Interface.sorted = false;
-	}
+			var ctx = Interface.Output._getContext();
+			ctx.fillColor = "#000000";
+			ctx.fillRect(0, 0, Interface.Output.width, Interface.Output.height);
+			Interface.Output.visibleObjects.forEach((obj) => {
+				obj.draw(ctx, offsetX, offsetY);
+			});
+		}
 
-	static reset() {
-		Interface.visibleObjects = [];
-		Interface.sorted = true;
+		/**
+		 * Ajouter un objet à afficher dans un niveau.
+		 */
+		static addObject(obj) {
+			Interface.Output.visibleObjects.push(obj);
+			Interface.Output.sorted = false;
+		}
+
+		/**
+		 * Supprime la liste des objets à afficher.
+		 */
+		static reset() {
+			Interface.Output.visibleObjects = [];
+			Interface.Output.sorted = true;
+		}
 	}
 }
 
