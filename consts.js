@@ -9,4 +9,4 @@ const AVATAR_ACCELERATION = 1000; // px/s²
 const AVATAR_MAXSPEED = 240; // px/s
 const AVATAR_JUMPFORCE = 500; // px/s
 
-const DELAY_BETWEEN_TICKS = 1 / 30 // en s
+const DELAY_BETWEEN_TICKS = 1 / 60 // en s
