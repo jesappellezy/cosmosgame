@@ -52,10 +52,12 @@ class Interface {
 		// Taille de l'affichage (à rendre responsive)
 		static width = 600;
 		static height = 400;
+		// Liste des boutons
+		static buttons = [];
 		// Liste des objets visibles dans un niveau (ils doivent avoir une fonction `draw()` qui reçcoit un argument pour le contexte du canvas)
-		static visibleObjects = [];
-		// Si les objets sont déjà mis dans l'ordre selon le Z (voir README.md)
-		static sorted = true;
+		static _visibleObjects = [];
+		// Si visibleObjects est actuellement dans l'ordre d'affichage (les objets en avant en dernier)
+		static _sorted = true;
 
 		/**
 		 * Permet de recevoir le contexte du canvas
@@ -72,8 +74,13 @@ class Interface {
 		 * Met les objets dans l'ordre selon le Z (voir README.md)
 		 */
 		static _sort() {
-			Interface.Output.visibleObjects.sort((obj1, obj2) => {
-				return obj2.getZ() - obj1.getZ();
+			Interface.Output._visibleObjects.sort((obj1, obj2) => {
+				var z1 = obj1.getZ();
+				var z2 = obj2.getZ()
+				if(z1[0] == z2[0]) 
+					return z1[1] - z2[1];
+				else
+					return z1[0] - z2[0];
 			});
 			Interface.Output.sorted = true;
 		}
@@ -82,37 +89,40 @@ class Interface {
 		 * Dessine tous les objets visibles dans un niveau.
 		 */
 		static draw(cameraX, cameraY) {
+			if(!Interface.Output.sorted)
+				Interface.Output._sort();
+
 			var offsetX = cameraX - Interface.Output.width / 2;
 			var offsetY = cameraY - Interface.Output.height / 2;
 
 			Interface.Output.CANVAS.width = Interface.Output.width;
 			Interface.Output.CANVAS.height = Interface.Output.height;
 
-			if(!Interface.Output.sorted)
-				Interface.Output._sort();
 
 			var ctx = Interface.Output._getContext();
 			ctx.fillColor = "#000000";
 			ctx.fillRect(0, 0, Interface.Output.width, Interface.Output.height);
-			Interface.Output.visibleObjects.forEach((obj) => {
+			Interface.Output._visibleObjects.forEach((obj) => {
 				obj.draw(ctx, offsetX, offsetY);
 			});
 		}
 
 		/**
-		 * Ajouter un objet à afficher dans un niveau.
+		 * Ajouter un/des objets à afficher.
+		 * arguments: Objets visibles (avec les fonctions `.draw(ctx, offsetX, offsetY)` et `.getZ()`).
 		 */
-		static addObject(obj) {
-			Interface.Output.visibleObjects.push(obj);
-			Interface.Output.sorted = false;
+		static addVisibleObject() {
+			[...arguments].forEach((obj) => {
+				this._visibleObjects.push(obj);
+			});
+			this._sorted = false;
 		}
 
 		/**
-		 * Supprime la liste des objets à afficher.
+		 * Supprimer tous les objets à afficher.
 		 */
-		static reset() {
-			Interface.Output.visibleObjects = [];
-			Interface.Output.sorted = true;
+		static removeVisibleObjects() {
+			this._visibleObjects = [];
 		}
 	}
 }
