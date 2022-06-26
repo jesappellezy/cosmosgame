@@ -4,15 +4,22 @@
  * Représente un ensemble de boîtes de collision.
  */
 class Collision {
-	collisionBoxes;
+	_collisionBoxes;
+	_semiTangibles;
+
 	/**
-	 * collisionBoxes: Array
+	 * collisionBoxes: Array of Array
 	 *   Liste des boîtes de collisions.
 	 *   Une boîte de collision c'est une liste de 4 valeurs :
 	 *     [positionX, positionY, largeur, hauteur]
+	 * semiTangibles: Array of Array
+	 *   Liste des plateformes semi-tangibles.
+	 *   Une plateforme semi-tangible c'est une liste de 3 valeurs :
+	 *     [positionX, positionY, largeur]
 	 */
-	constructor(collisionBoxes) {
-		this.collisionBoxes = collisionBoxes;
+	constructor(collisionBoxes, semiTangibles) {
+		this._collisionBoxes = collisionBoxes;
+		this._semiTangibles = semiTangibles;
 	}
 
 	/**
@@ -24,8 +31,12 @@ class Collision {
 	 */
 	draw(ctx, offsetX, offsetY) {
 		ctx.fillStyle = COLLISION_COLOR;
-		this.collisionBoxes.forEach((box) => {
+		this._collisionBoxes.forEach((box) => {
 			ctx.fillRectTrunc(box[0] - offsetX, box[1] - offsetY, box[2], box[3]);
+		});
+		ctx.fillStyle = SEMI_TANGIBLE_COLOR;
+		this._semiTangibles.forEach((st) => {
+			ctx.fillRectTrunc(st[0] - offsetX, st[1] - offsetY, st[2], SEMI_TANGIBLE_HEIGHT);
 		});
 	}
 
@@ -40,6 +51,9 @@ class Collision {
 	 * Calcule les collisions et tout bref après des heures d'acharnement ça fonctionne bien on peut laisser comme ça :')
 	 */
 	verifyMove(box, moveX, moveY) {
+
+		var onFloor = false;
+
 		var posX = box[0] + moveX;
 		var posY = box[1] + moveY;
 		var baseMoveX = moveX;
@@ -47,9 +61,27 @@ class Collision {
 		var basePosX = posX;
 		var basePosY = posY;
 
-		var onFloor = false;
+		// plateformes semi-tangibles
 
-		this.collisionBoxes.forEach((box2,i) => {
+		if (moveY > 0) {
+			this._semiTangibles.forEach((semiTangible) => {
+				if(
+					semiTangible[0] + semiTangible[2] > box[0] &&
+					box[0] + box[2] > semiTangible[0] &&
+					box[1] + box[3] <= semiTangible[1] &&
+					box[1] + box[3] + moveY >= semiTangible[1]
+					) {
+					posY = semiTangible[1] - box[3];
+					moveX = posX - box[0];
+					moveY = posX - box[0];
+					onFloor = true;
+				}
+			})
+		}
+
+		// boîtes de collision
+
+		this._collisionBoxes.forEach((box2) => {
 			if(
 				posX < box2[0] + box2[2] &&
 				box2[0] < posX + box[2] &&
@@ -89,7 +121,8 @@ class Collision {
 				(basePosX > posX && baseMoveX > 0),
 			stopY:
 				(basePosY < posY && baseMoveY < 0) ||
-				(basePosY > posY && baseMoveY > 0),
+				(basePosY > posY && baseMoveY > 0) ||
+				onFloor,
 			onFloor: onFloor
 		};
 	}

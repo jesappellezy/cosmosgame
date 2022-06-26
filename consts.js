@@ -5,9 +5,12 @@
  */
 
 // AFFICHAGE
-// Couleur pour les boîtes de collisions
+// Boîtes de collisions
 const COLLISION_COLOR = "#ff8800";
-// Couleur pour l'avatar (temporairement)
+// Semi-tangibles 
+const SEMI_TANGIBLE_COLOR = "#ff0000";
+const SEMI_TANGIBLE_HEIGHT = 10;
+// Avatar (temporairement)
 const AVATAR_COLOR = "#ff77CC";
 
 // AVATAR
