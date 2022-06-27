@@ -6,11 +6,11 @@ class CharButton extends Button {
 	 * x, y: position du bouton
 	 * char: petit texte affiché sur le bouton
 	 * fontSize: taille du texte
-	 * yPos: position verticale du texte (autour de 20)
+	 * yPos: position verticale du texte (autour de 100)
 	 * active: si le bouton parait pressé
 	 */
 	constructor(x, y, char, fontSize, yPos, f, active = false) {
-		super(x, y, 30, 30, assets.Editor.button, f, active, assets.Editor.buttonHover, assets.Editor.buttonActive);
+		super(x, y, EDITOR_BUTTON_SIZE, EDITOR_BUTTON_SIZE, assets.Editor.button, f, active, assets.Editor.buttonHover, assets.Editor.buttonActive);
 		this._char = char;
 		this._fontSize = fontSize;
 		this._yPos = yPos;
@@ -18,10 +18,9 @@ class CharButton extends Button {
 
 	draw(ctx) {
 		super.draw(ctx);
-		window.uuu = ctx;
 		ctx.textAlign = "center";
 		ctx.fillStyle = "#ffffff";
 		ctx.font = String(this._fontSize) + "px sans-serif";
-		ctx.fillText(this._char, this._x + 15, this._y + this._yPos);
+		ctx.fillText(this._char, this._x + EDITOR_BUTTON_SIZE/2, this._y + this._yPos);
 	}
 }

@@ -17,9 +17,9 @@ class Level {
 	 */
 	constructor() {
 		this._baseX = 0 - AVATAR_WIDTH / 2;
-		this._baseY = -200
+		this._baseY = -800
 
-		this.collision = new Collision([ [-100, 100, 200, 50], [50, 0, 150, 25], [150, -50, 150, 50], [500, -50, 150, 50] ], [ [-150, 10, 100], [-300, 0, 150], [-300, -80, 150], [-300, -160, 150] ]);
+		this.collision = new Collision([ [-400, 400, 800, 200], [200, 0, 600, 100], [600, -200, 600, 200], [1000, -200, 300, 200] ], [ [-600, 40, 400], [-1200, 0, 600], [-1200, -320, 600], [-1200, -640, 600] ]);
 
 		this.reset();
 		this._cameraFollowsAvatar();
@@ -41,14 +41,9 @@ class Level {
 		if(!this.sorted)
 			this._sort();
 
-		var offsetX = this.cameraX - Interface.Output.width / 2;
-		var offsetY = this.cameraY - Interface.Output.height / 2;
+		var offsetX = this.cameraX - CANVAS_WIDTH / 2;
+		var offsetY = this.cameraY - CANVAS_HEIGHT / 2;
 
-		Interface.Output.CANVAS.width = Interface.Output.width;
-		Interface.Output.CANVAS.height = Interface.Output.height;
-
-		ctx.fillColor = "#000000";
-		ctx.fillRect(0, 0, Interface.Output.width, Interface.Output.height);
 		this._visibleObjects.forEach((obj) => {
 			obj.draw(ctx, offsetX, offsetY);
 		});

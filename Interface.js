@@ -16,8 +16,8 @@ class Interface {
 		leftPressed = false;      //
 		upPressed = false;        //
 		leftClickPressed = false; //
-		mouseX = 0; // position actuelle du pointeur
-		mouseY = 0; // 
+		mouseX = 0; // position actuelle du pointeur relatif au canvas
+		mouseY = 0; //
 
 		_leftClick = false;
 		/**
@@ -69,8 +69,10 @@ class Interface {
 
 			document.addEventListener("mousemove", (e) => {
 				var x = e.x - Interface.Output.CANVAS.offsetLeft;
+				x /= Interface.Output.CANVAS.offsetWidth / CANVAS_WIDTH;
 				Interface.Input.mouseX = x;
 				var y = e.y - Interface.Output.CANVAS.offsetLeft;
+				y /= Interface.Output.CANVAS.offsetHeight / CANVAS_HEIGHT;
 				Interface.Input.mouseY = y;
 			});
 
@@ -103,9 +105,6 @@ class Interface {
 		// Elément HTML du canvas
 		static CANVAS = document.getElementById("canvas");
 
-		// Taille de l'affichage (à rendre responsive...)
-		static width = 600;
-		static height = 400;
 		// Liste des boutons
 		static buttons = [];
 
@@ -137,7 +136,40 @@ class Interface {
 		static removeVisibleObjects() {
 			this._visibleObjects = [];
 		}
+
+		/**
+		 * Synchroniser la taille et la position du canvas avec la taille de la fenêtre.
+		 */
+		static syncSize() {
+			var canvas = Interface.Output.CANVAS;
+
+			var pageWidth = document.body.offsetWidth;
+			var pageHeight = document.body.offsetHeight;
+			if(pageWidth / CANVAS_WIDTH < pageHeight / CANVAS_HEIGHT) {
+				canvas.style.width = String(pageWidth) + "px";
+				canvas.style.height = String(pageWidth / CANVAS_WIDTH * CANVAS_HEIGHT) + "px";
+				canvas.style.marginTop = String((pageHeight - pageWidth / CANVAS_WIDTH * CANVAS_HEIGHT) / 2) + "px";
+				canvas.style.marginLeft = "0";
+			}
+			else {
+				canvas.style.height = String(pageHeight) + "px";
+				canvas.style.width = String(pageHeight /  CANVAS_HEIGHT * CANVAS_WIDTH) + "px";
+				canvas.style.marginTop = "0";
+				canvas.style.marginLeft = String((pageWidth - pageHeight / CANVAS_HEIGHT * CANVAS_WIDTH) / 2) + "px";
+			}
+		}
+
+		/**
+		 * A appeler une seule fois.
+		 */
+		static init() {
+			window.addEventListener("resize", () => Interface.Output.syncSize());
+			Interface.Output.syncSize();
+			canvas.width = CANVAS_WIDTH;
+			canvas.height = CANVAS_HEIGHT;
+		}
 	}
 }
 
 Interface.Input.init();
+Interface.Output.init();

@@ -2,14 +2,22 @@
 
 // Appelle tickObject.tick() et tickObject.draw(ctx) en boucle.
 function main() {
-	window.tickObject = new Editor(new Level());
+	function tick() {
+		tickObject.tick();
+		Interface.Input.getLeftClick();
 
+		var ctx = Interface.Output.getContext();
+		ctx.fillStyle = "#000000";
+		ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+		tickObject.draw(ctx);
+	}
+
+	window.tickObject = new Editor(new Level());
+	
 	// Boucle
 	var startTime = Date.now();
 	function loop() {
-		tickObject.tick();
-		Interface.Input.getLeftClick();
-		tickObject.draw(Interface.Output.getContext());
+		tick();
 		var endTime = Date.now();
 	
 		startTime += DELAY_BETWEEN_TICKS*1000;
@@ -25,4 +33,14 @@ function main() {
 	loop();
 }
 
-loadAssets(main);
+loadAssets(() => main());
+
+function logTimeDoingThis(f) {
+	var startTime = Date.now();
+	var r = f();
+	var endTime = Date.now();
+	var p = (endTime-startTime) / (DELAY_BETWEEN_TICKS*1000) * 100;
+	if (p < 100) console.log(p, "%");
+	else console.error(p, "%");
+	return r;
+}

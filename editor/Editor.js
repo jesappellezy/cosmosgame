@@ -15,7 +15,7 @@ class Editor {
 		this._lastMouseX = Interface.Input.mouseX;
 		this._lastMouseY = Interface.Input.mouseY;
 
-		this._button = new CharButton(10, 10, "▶", 18, 21, () => {
+		this._button = new CharButton(10, 10, "▶", 72, 84, () => {
 			this._playStop();
 		});
 		Interface.Input.buttons = [this._button];
@@ -57,10 +57,10 @@ class Editor {
 	 */
 	draw(ctx) {
 		this._level.draw(ctx);
-		Interface.Input.drawButtons(ctx);
 		if(!this._playing) {
 			this._showGrid(ctx);
 		}
+		Interface.Input.drawButtons(ctx);
 	}
 
 	_playStop() {
@@ -74,8 +74,8 @@ class Editor {
 	_showGrid(ctx) {
 		var offsetX = -this._level.cameraX;
 		var offsetY = -this._level.cameraY;
-		var width = Interface.Output.width;
-		var height = Interface.Output.height;
+		var width = CANVAS_WIDTH;
+		var height = CANVAS_HEIGHT;
 		var allX = []
 
 		ctx.fillStyle = EDITOR_GRID_COLOR
@@ -84,14 +84,14 @@ class Editor {
 		if(x < 0)
 			x += EDITOR_GRID_SIZE;
 		for(; x < width + width; x += EDITOR_GRID_SIZE) {
-			ctx.fillRect(x, 0, 1, height);
+			ctx.fillRect(x, 0, 4, height);
 		}
 
 		var y = offsetY % EDITOR_GRID_SIZE;
 		if(y < 0)
 			y += EDITOR_GRID_SIZE;
 		for(; y < width + width; y += EDITOR_GRID_SIZE) {
-			ctx.fillRect(0, y, width, 1);
+			ctx.fillRect(0, y, width, 4);
 		}
 	}
 }
