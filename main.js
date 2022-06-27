@@ -17,7 +17,7 @@ function main() {
 	// Boucle
 	var startTime = Date.now();
 	function loop() {
-		tick();
+		logTimeDoingThis(() => tick());
 		var endTime = Date.now();
 	
 		startTime += DELAY_BETWEEN_TICKS*1000;

@@ -70,7 +70,7 @@ function loadAssets(onloadend) {
 	var gen = files();
 	function load(value) {
 		if(value != undefined) {
-			value.el.onloadend = () => {
+			value.el.onload = () => {
 				load(gen.next().value);
 			};
 			value.el.src = value.src;

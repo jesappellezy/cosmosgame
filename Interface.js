@@ -71,7 +71,7 @@ class Interface {
 				var x = e.x - Interface.Output.CANVAS.offsetLeft;
 				x /= Interface.Output.CANVAS.offsetWidth / CANVAS_WIDTH;
 				Interface.Input.mouseX = x;
-				var y = e.y - Interface.Output.CANVAS.offsetLeft;
+				var y = e.y - Interface.Output.CANVAS.offsetTop;
 				y /= Interface.Output.CANVAS.offsetHeight / CANVAS_HEIGHT;
 				Interface.Input.mouseY = y;
 			});
