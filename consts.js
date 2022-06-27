@@ -27,3 +27,7 @@ const AVATAR_JUMPFORCE = 500; // px/s
 
 // Délai entre chaque tick
 const DELAY_BETWEEN_TICKS = 1 / 60 // en s
+
+// Grille de l'éditeur
+const EDITOR_GRID_SIZE = 40;
+const EDITOR_GRID_COLOR = "#88888888";

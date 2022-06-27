@@ -12,11 +12,26 @@ class Interface {
 	 *   Interface.Input.rightPressed
 	 */
 	static Input = class {
-		rightPressed = false; // ... private
-		leftPressed = false;
-		upPressed = false;
+		rightPressed = false;     // true si la touche est pressée
+		leftPressed = false;      //
+		upPressed = false;        //
+		leftClickPressed = false; //
+		mouseX = 0; // position actuelle du pointeur
+		mouseY = 0; // 
 
-		// A appeler une seule fois pour préparer les évènements pour recevoir chaque entrée.
+		_leftClick = false;
+		/**
+		 * Retourne true si il y a eu un clic gauche et qu'il n'a pas encore été get.
+		 */
+		static getLeftClick() {
+			var r = Interface.Input._leftClick;
+			Interface.Input._leftClick = false;
+			return r;
+		}
+
+		/**
+		 * A appeler une seule fois pour préparer les évènements pour recevoir chaque entrée.
+		 */
 		static init() {
 			function set(key, value) {
 				switch(key) {
@@ -29,6 +44,9 @@ class Interface {
 					case "ArrowUp":
 						Interface.Input.upPressed = value;
 						break;
+					case "(LeftClick)":
+						Interface.Input.leftClickPressed = value;
+						break;
 				}
 			}
 			
@@ -38,6 +56,42 @@ class Interface {
 			
 			document.addEventListener("keyup", (event) => {
 				set(event.key, false);
+			});
+
+			Interface.Output.CANVAS.addEventListener("mousedown", () => {
+				set("(LeftClick)", true);
+				Interface.Input._leftClick = true;
+			});
+
+			document.addEventListener("mouseup", () => {
+				set("(LeftClick)", false);
+			});
+
+			document.addEventListener("mousemove", (e) => {
+				var x = e.x - Interface.Output.CANVAS.offsetLeft;
+				Interface.Input.mouseX = x;
+				var y = e.y - Interface.Output.CANVAS.offsetLeft;
+				Interface.Input.mouseY = y;
+			});
+
+			Interface.Input.buttons = [];
+		}
+
+		/**
+		 * Doit être appelé à chaque tick.
+		 */
+		static tickButtons() {
+			Interface.Input.buttons.forEach((button) => {
+				button.tick();
+			});
+		}
+
+		/**
+		 * Doit être appelé à chaque tick.
+		 */
+		static drawButtons(ctx) {
+			Interface.Input.buttons.forEach((button) => {
+				button.draw(ctx);
 			});
 		}
 	}
@@ -49,62 +103,21 @@ class Interface {
 		// Elément HTML du canvas
 		static CANVAS = document.getElementById("canvas");
 
-		// Taille de l'affichage (à rendre responsive)
+		// Taille de l'affichage (à rendre responsive...)
 		static width = 600;
 		static height = 400;
 		// Liste des boutons
 		static buttons = [];
-		// Liste des objets visibles dans un niveau (ils doivent avoir une fonction `draw()` qui reçcoit un argument pour le contexte du canvas)
-		static _visibleObjects = [];
-		// Si visibleObjects est actuellement dans l'ordre d'affichage (les objets en avant en dernier)
-		static _sorted = true;
 
 		/**
 		 * Permet de recevoir le contexte du canvas
 		 */ 
-		static _getContext() {
+		static getContext() {
 			var ctx = Interface.Output.CANVAS.getContext('2d');
 			ctx.fillRectTrunc = (a,b,c,d) => {
 				ctx.fillRect(Math.round(a), Math.round(b), Math.round(c), Math.round(d));
 			};
 			return ctx;
-		}
-
-		/**
-		 * Met les objets dans l'ordre selon le Z (voir README.md)
-		 */
-		static _sort() {
-			Interface.Output._visibleObjects.sort((obj1, obj2) => {
-				var z1 = obj1.getZ();
-				var z2 = obj2.getZ()
-				if(z1[0] == z2[0]) 
-					return z1[1] - z2[1];
-				else
-					return z1[0] - z2[0];
-			});
-			Interface.Output.sorted = true;
-		}
-
-		/**
-		 * Dessine tous les objets visibles dans un niveau.
-		 */
-		static draw(cameraX, cameraY) {
-			if(!Interface.Output.sorted)
-				Interface.Output._sort();
-
-			var offsetX = cameraX - Interface.Output.width / 2;
-			var offsetY = cameraY - Interface.Output.height / 2;
-
-			Interface.Output.CANVAS.width = Interface.Output.width;
-			Interface.Output.CANVAS.height = Interface.Output.height;
-
-
-			var ctx = Interface.Output._getContext();
-			ctx.fillColor = "#000000";
-			ctx.fillRect(0, 0, Interface.Output.width, Interface.Output.height);
-			Interface.Output._visibleObjects.forEach((obj) => {
-				obj.draw(ctx, offsetX, offsetY);
-			});
 		}
 
 		/**

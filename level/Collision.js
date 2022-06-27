@@ -44,7 +44,7 @@ class Collision {
 	 * Retourne le Z de l'objet (voir README.md)
 	 */
 	getZ() {
-		return [0, 1];
+		return [0, 0];
 	}
 
 	/**

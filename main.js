@@ -1,13 +1,15 @@
 "use strict";
 
-var tickObject = new Level();
-
-// Appeller tickObject.tick() en boucle.
+// Appelle tickObject.tick() et tickObject.draw(ctx) en boucle.
 function main() {
+	window.tickObject = new Editor(new Level());
+
 	// Boucle
 	var startTime = Date.now();
 	function loop() {
 		tickObject.tick();
+		Interface.Input.getLeftClick();
+		tickObject.draw(Interface.Output.getContext());
 		var endTime = Date.now();
 	
 		startTime += DELAY_BETWEEN_TICKS*1000;
@@ -23,4 +25,4 @@ function main() {
 	loop();
 }
 
-main();
+loadAssets(main);
