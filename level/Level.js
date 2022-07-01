@@ -16,10 +16,10 @@ class Level {
 	 * (un jour faudra mettre en entrée des trucs pour faire des niveaux différents)
 	 */
 	constructor() {
-		this._baseX = -80;
-		this._baseY = -800;
+		this._baseX = 0 - AVATAR_WIDTH / 2;
+		this._baseY = -800
 
-		this.collision = new Collision([ [-400, 400, 800, 200], [200, 0, 600, 100], [600, -200, 600, 200], [2000, -200, 600, 200] ], [ [-600, 40, 400], [-1200, 0, 600], [-1200, -320, 600], [-1200, -640, 600] ]);
+		this.collision = new Collision([ [-400, 400, 800, 200], [200, 0, 600, 100], [600, -200, 600, 200], [1000, -200, 300, 200] ], [ [-600, 40, 400], [-1200, 0, 600], [-1200, -320, 600], [-1200, -640, 600] ]);
 
 		this.reset();
 		this._cameraFollowsAvatar();
@@ -41,10 +41,11 @@ class Level {
 		if(!this.sorted)
 			this._sort();
 
-		var camera = this.getCameraTopLeft();
+		var offsetX = this.cameraX - CANVAS_WIDTH / 2;
+		var offsetY = this.cameraY - CANVAS_HEIGHT / 2;
 
 		this._visibleObjects.forEach((obj) => {
-			obj.draw(ctx, camera[0], camera[1]);
+			obj.draw(ctx, offsetX, offsetY);
 		});
 	}
 
@@ -55,13 +56,6 @@ class Level {
 		this.avatar = new Avatar(this._baseX, this._baseY, this);
 		this._visibleObjects = [this.collision, this.avatar];
 		this._sorted = false;
-	}
-
-	/**
-	 * Retourne la position du point haut-gauche de la caméra.
-	 */
-	getCameraTopLeft() {
-		return [this.cameraX - CANVAS_WIDTH / 2, this.cameraY - CANVAS_HEIGHT / 2];
 	}
 
 	/**

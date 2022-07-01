@@ -13,6 +13,9 @@ var assets = {
 		button: "editor/button.png",
 		buttonHover: "editor/button_hover.png",
 		buttonActive: "editor/button_active.png"
+	},
+	Level: {
+		avatar: 'img/char.png',
 	}
 }
 
@@ -36,7 +39,7 @@ function loadAssets(onloadend) {
 			var newLocation = Array(...location, key);
 			var value = getValue(newLocation);
 
-			
+
 			if(typeof(value) == "object") {
 				getKeys(newLocation, value);
 			}
@@ -51,7 +54,7 @@ function loadAssets(onloadend) {
 		for(var i = 0; i < keysList.length; i++) {
 			var keys = keysList[i];
 			var file = getValue(keys);
-			
+
 			data = undefined;
 			if(file.slice(-4) == ".png") {
 				var data = document.createElement("img");
