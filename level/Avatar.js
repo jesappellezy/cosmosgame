@@ -116,10 +116,7 @@ class Avatar {
 
 		// Remet l'avatar à une position de base quand il tombe trop bas (temporaire)
 		if(this.y > 1600) {
-			this.x = 0 - AVATAR_WIDTH / 2;
-			this.y = -200;
-			this.speedX = 0;
-			this.speedY = 0;
+			this.level.reset();
 		}
 	}
 }
