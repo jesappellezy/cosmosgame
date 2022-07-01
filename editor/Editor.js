@@ -67,7 +67,7 @@ class Editor {
 			else if(this._mode == "collisions") {
 				if(this._selectThing != null)
 					this._selectThing.tick(cameraX, cameraY, mouseX_canvas, mouseY_canvas, mouseMoveX_canvas, mouseMoveY_canvas);
-				
+
 				if(this._isMouseOn(mouseX_canvas, mouseY_canvas, [this._level.avatar.x, this._level.avatar.y, AVATAR_WIDTH, AVATAR_HEIGHT]) && Interface.Input.getLeftClick()) {
 					this._selectThing = new SelectThing(this._level.avatar);
 				}
@@ -140,6 +140,24 @@ class Editor {
 		for(; y < width + width; y += EDITOR_GRID_SIZE) {
 			ctx.fillRect(0, y, width, gridWidth);
 		}
+
+		// Afficher l'échelle
+		ctx.lineWidth = gridWidth * 2;
+		ctx.strokeStyle = EDITOR_SCALE_COLOR;
+		ctx.beginPath();
+		var x = CANVAS_WIDTH - EDITOR_GRID_SIZE * 2;
+		var y = CANVAS_HEIGHT - EDITOR_GRID_SIZE * 1.5;
+		ctx.moveTo(x, y);
+		ctx.lineTo(x - EDITOR_GRID_SIZE * 2, y);
+		ctx.moveTo(x, y - 10);
+		ctx.lineTo(x, y + 10);
+		ctx.moveTo(x - EDITOR_GRID_SIZE * 2, y - 10);
+		ctx.lineTo(x - EDITOR_GRID_SIZE * 2, y + 10);
+		ctx.stroke();
+		ctx.textAlign = "center";
+		ctx.fillStyle = "#ffffff";
+		ctx.font = "bold 40px sans-serif";
+		ctx.fillText(String(EDITOR_GRID_SIZE * 2) + "px", x - EDITOR_GRID_SIZE, y - 20);
 	}
 
 	_changeMode(value) {

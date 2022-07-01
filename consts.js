@@ -35,6 +35,7 @@ const EDITOR_PRECISION = 20;
 // Grille de l'éditeur
 const EDITOR_GRID_SIZE = 80;
 const EDITOR_GRID_COLOR = "#888888";
+const EDITOR_SCALE_COLOR = "#ffffff";
 // Boutons de l'éditeur
 const EDITOR_BUTTON_SIZE = 120;
 // Sélection
