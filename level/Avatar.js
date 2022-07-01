@@ -17,7 +17,6 @@ class Avatar {
 	onFloor;
 	// La partie dans lequel est actuellement l'avatar
 	level;
-	image;
 
 	/**
 	 * x et y: float
@@ -35,9 +34,6 @@ class Avatar {
 		this.onFloor = false;
 
 		this.level = level;
-		//~ this.image =  assets.Level.avatar;
-		this.image = new Image(); // assets.Level.avatar;
-		this.image.src = "./img/char.png"
 	}
 
 	/**
@@ -55,7 +51,6 @@ class Avatar {
 			this.width,
 			this.height
 			);
-			ctx.drawImage(this.image, this._x, this._y, this._width, this._height);
 	}
 
 	/**
@@ -121,10 +116,7 @@ class Avatar {
 
 		// Remet l'avatar à une position de base quand il tombe trop bas (temporaire)
 		if(this.y > 1600) {
-			this.x = 0 - AVATAR_WIDTH / 2;
-			this.y = -200;
-			this.speedX = 0;
-			this.speedY = 0;
+			this.level.reset();
 		}
 	}
 }
