@@ -43,7 +43,7 @@ class Button {
 	 */
 	draw(ctx) {
 		var image = this.active ? this._imageActive : (this._isMouseHover() ? this._imageHover : this._image);
-		ctx.drawImage(image, this._x, this._y, this._width,this._height);
+		ctx.drawImage(image, this._x, this._y, this._width, this._height);
 	}
 
 	_isMouseHover() {

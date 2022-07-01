@@ -17,6 +17,7 @@ class Avatar {
 	onFloor;
 	// La partie dans lequel est actuellement l'avatar
 	level;
+	image;
 
 	/**
 	 * x et y: float
@@ -34,6 +35,7 @@ class Avatar {
 		this.onFloor = false;
 
 		this.level = level;
+		this.image =  assets.Level.avatar;
 	}
 
 	/**
@@ -43,14 +45,15 @@ class Avatar {
 	 * offsetX, offsetY
 	 *   Vecteur à soustraire de la position de l'avatar pour le dessiner au bon endroit
 	 */
-	draw(ctx, offsetX, offsetY) {
+	draw(ctx, cameraX, cameraY) {
 		ctx.fillStyle = AVATAR_COLOR;
 		ctx.fillRectTrunc(
-			this.x - offsetX,
-			this.y - offsetY,
+			this.x - cameraX,
+			this.y - cameraY,
 			this.width,
 			this.height
 			);
+		ctx.drawImage(this.image, this.x - cameraX, this.y - cameraY, this.width, this.height);
 	}
 
 	/**
