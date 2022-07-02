@@ -16,10 +16,10 @@ class Level {
 	 * (un jour faudra mettre en entrée des trucs pour faire des niveaux différents)
 	 */
 	constructor() {
-		this._baseX = -80;
-		this._baseY = -800;
+		this._baseX = 0;
+		this._baseY = -200;
 
-		this.collision = new Collision([ [-400, 400, 800, 200], [200, 0, 600, 100], [600, -200, 600, 200], [2000, -200, 600, 200] ], [ [-600, 40, 400], [-1200, 0, 600], [-1200, -320, 600], [-1200, -640, 600] ]);
+		this.collision = new Collision([ [-320, -400, 80, 400], [360, -400, 80, 400] ], [ [-240, 0, 600], [-240, -360, 600] ]);
 
 		this.reset();
 		this._cameraFollowsAvatar();

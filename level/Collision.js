@@ -4,8 +4,8 @@
  * Représente un ensemble de boîtes de collision.
  */
 class Collision {
-	_collisionBoxes;
-	_halfTangibles;
+	collisionBoxes;
+	halfTangibles;
 
 	/**
 	 * collisionBoxes: Array of Array
@@ -18,8 +18,8 @@ class Collision {
 	 *     [positionX, positionY, largeur]
 	 */
 	constructor(collisionBoxes, halfTangibles) {
-		this._collisionBoxes = collisionBoxes;
-		this._halfTangibles = halfTangibles;
+		this.collisionBoxes = collisionBoxes;
+		this.halfTangibles = halfTangibles;
 	}
 
 	/**
@@ -31,11 +31,11 @@ class Collision {
 	 */
 	draw(ctx, offsetX, offsetY) {
 		ctx.fillStyle = COLLISION_COLOR;
-		this._collisionBoxes.forEach((box) => {
+		this.collisionBoxes.forEach((box) => {
 			ctx.fillRectTrunc(box[0] - offsetX, box[1] - offsetY, box[2], box[3]);
 		});
 		ctx.fillStyle = HALF_TANGIBLE_COLOR;
-		this._halfTangibles.forEach((st) => {
+		this.halfTangibles.forEach((st) => {
 			ctx.fillRectTrunc(st[0] - offsetX, st[1] - offsetY, st[2], HALF_TANGIBLE_HEIGHT);
 		});
 	}
@@ -64,7 +64,7 @@ class Collision {
 		// plateformes semi-tangibles
 
 		if (moveY > 0) {
-			this._halfTangibles.forEach((halfTangible) => {
+			this.halfTangibles.forEach((halfTangible) => {
 				if(
 					halfTangible[0] + halfTangible[2] > box[0] &&
 					box[0] + box[2] > halfTangible[0] &&
@@ -81,7 +81,7 @@ class Collision {
 
 		// boîtes de collision
 
-		this._collisionBoxes.forEach((box2) => {
+		this.collisionBoxes.forEach((box2) => {
 			if(
 				posX < box2[0] + box2[2] &&
 				box2[0] < posX + box[2] &&
@@ -128,10 +128,10 @@ class Collision {
 	}
 
 	getCollisionBoxes() {
-		return this._collisionBoxes;
+		return this.collisionBoxes;
 	}
 
 	getHalfTangibles() {
-		return this._halfTangibles;
+		return this.halfTangibles;
 	}
 }
