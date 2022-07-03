@@ -49,6 +49,16 @@ class Editor {
 			this.unsetSelectThing();
 		});
 
+		this._buttonLoad = new CharButton(CANVAS_WIDTH - EDITOR_BUTTON_SIZE * 2 - 80, 40, "l", 72, 80, () => {
+			if(confirm("Charger un autre niveau ? Ce niveau sera perdu s'il n'a pas été sauvegardé.")) LoadSaveLevel.loadFromFile((level) => {
+				tickObject = new Editor(level);
+			});
+		});
+
+		this._buttonSave = new CharButton(CANVAS_WIDTH - EDITOR_BUTTON_SIZE - 40, 40, "s", 72, 80, () => {
+			if(confirm("Sauvegarder le niveau dans un fichier ?")) LoadSaveLevel.saveInFile(this._level);
+		});
+
 		this._mode = "move";
 
 		this._syncButtons();
@@ -216,7 +226,7 @@ class Editor {
 			if(this.getSelectThing() != null && ["collisionbox", "half-tangible"].indexOf(this.getSelectThing()._type) != -1) {
 				bottomButtons.push(this._buttonRemoveSelected);
 			}
-			Interface.Input.buttons = [this._buttonPlay, this._buttonMove, this._buttonCollisions, ...bottomButtons];
+			Interface.Input.buttons = [this._buttonPlay, this._buttonMove, this._buttonCollisions, this._buttonLoad, this._buttonSave, ...bottomButtons];
 		}
 	}
 
