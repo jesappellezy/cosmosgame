@@ -31,6 +31,7 @@ const AVATAR_JUMPFORCE = 2000; // px/s
 // DÃ©lai entre chaque tick
 const DELAY_BETWEEN_TICKS = 1 / 60 // en s
 
+// Précision du placement des collisions dans l'éditeur
 const EDITOR_PRECISION = 20;
 // Grille de l'Ã©diteur
 const EDITOR_GRID_SIZE = 80;
