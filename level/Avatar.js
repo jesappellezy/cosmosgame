@@ -17,7 +17,6 @@ class Avatar {
 	onFloor;
 	// La partie dans lequel est actuellement l'avatar
 	level;
-	image;
 
 	/**
 	 * x et y: float
@@ -33,9 +32,9 @@ class Avatar {
 		this.speedX = 0; // en px/s
 		this.speedY = 0; // en px/s
 		this.onFloor = false;
+		this.upPressed = true;
 
 		this.level = level;
-		this.image =  assets.Level.avatar;
 	}
 
 	/**
@@ -45,15 +44,14 @@ class Avatar {
 	 * offsetX, offsetY
 	 *   Vecteur à soustraire de la position de l'avatar pour le dessiner au bon endroit
 	 */
-	draw(ctx, cameraX, cameraY) {
+	draw(ctx, offsetX, offsetY) {
 		ctx.fillStyle = AVATAR_COLOR;
 		ctx.fillRectTrunc(
-			this.x - cameraX,
-			this.y - cameraY,
+			this.x - offsetX,
+			this.y - offsetY,
 			this.width,
 			this.height
 			);
-		ctx.drawImage(this.image, this.x - cameraX, this.y - cameraY, this.width, this.height);
 	}
 
 	/**
@@ -70,9 +68,13 @@ class Avatar {
 		// DETERMINE LA NOUVELLE VITESSE
 		// sur y
 		this.speedY += GRAVITY * DELAY_BETWEEN_TICKS;
-		if(this.onFloor && Interface.Input.upPressed) {
+		if(this.onFloor && Interface.Input.upPressed && !this.upPressed) {
 			this.speedY = -AVATAR_JUMPFORCE;
 		}
+		if(Interface.Input.upPressed && !this.upPressed)
+			this.upPressed = true;
+		else if(this.upPressed && !Interface.Input.upPressed)
+			this.upPressed = false;
 
 		// sur x
 		if(Interface.Input.rightPressed && !Interface.Input.leftPressed) {

@@ -13,6 +13,10 @@ class SelectThing {
 		this._selected = null;
 		this._selectedPoint = null;
 		this._leftClickPressed = false;
+
+		var w = this._type == "avatar" ? null : this._getW();
+		var h = ["avatar", "half-tangible"].indexOf(this._type) != -1 ? null : this._getH();
+		this._setDims(this._getX(), this._getY(), w, h);
 	}
 	tick(cameraX, cameraY, mouseX_canvas, mouseY_canvas) {
 		var dims = this._getDimensions(cameraX, cameraY);

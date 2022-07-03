@@ -27,11 +27,43 @@ class Editor {
 			this._changeMode("collisions");
 		});
 
+		this._buttonCreateCollisionBox = new CharButton(40, CANVAS_HEIGHT - EDITOR_BUTTON_SIZE - 40, "□", 100, 84, () => {
+			this._create("collisionbox");
+		});
+
+		this._buttonCreateHalfTangible = new CharButton(80 + EDITOR_BUTTON_SIZE, CANVAS_HEIGHT - EDITOR_BUTTON_SIZE - 40, "_", 72, 70, () => {
+			this._create("half-tangible");
+		});
+
+		this._buttonRemoveSelected = new CharButton(40, CANVAS_HEIGHT - EDITOR_BUTTON_SIZE * 2 - 80, "x", 80, 80, () => {
+			switch(this.getSelectThing()._type) {
+				case "collisionbox":
+					var i = this._level.collision.collisionBoxes.indexOf(this.getSelectThing()._obj);
+					this._level.collision.collisionBoxes.splice(i, 1);
+					break;
+				case "half-tangible":
+					var i = this._level.collision.halfTangibles.indexOf(this.getSelectThing()._obj);
+					this._level.collision.halfTangibles.splice(i, 1);
+					break;
+			}
+			this.unsetSelectThing();
+		});
+
+		this._buttonLoad = new CharButton(CANVAS_WIDTH - EDITOR_BUTTON_SIZE * 2 - 80, 40, "l", 72, 80, () => {
+			if(confirm("Charger un autre niveau ? Ce niveau sera perdu s'il n'a pas été sauvegardé.")) LoadSaveLevel.loadFromFile((level) => {
+				tickObject = new Editor(level);
+			});
+		});
+
+		this._buttonSave = new CharButton(CANVAS_WIDTH - EDITOR_BUTTON_SIZE - 40, 40, "s", 72, 80, () => {
+			if(confirm("Sauvegarder le niveau dans un fichier ?")) LoadSaveLevel.saveInFile(this._level);
+		});
+
 		this._mode = "move";
 
 		this._syncButtons();
 
-		this._selectThing = null;
+		this.unsetSelectThing();
 	}
 
 	/**
@@ -65,20 +97,20 @@ class Editor {
 				}
 			}
 			else if(this._mode == "collisions") {
-				if(this._selectThing != null)
-					this._selectThing.tick(cameraX, cameraY, mouseX_canvas, mouseY_canvas, mouseMoveX_canvas, mouseMoveY_canvas);
+				if(this.getSelectThing() != null)
+					this.getSelectThing().tick(cameraX, cameraY, mouseX_canvas, mouseY_canvas, mouseMoveX_canvas, mouseMoveY_canvas);
 
 				if(this._isMouseOn(mouseX_canvas, mouseY_canvas, [this._level.avatar.x, this._level.avatar.y, AVATAR_WIDTH, AVATAR_HEIGHT]) && Interface.Input.getLeftClick()) {
-					this._selectThing = new SelectThing(this._level.avatar);
+					this.setSelectThing(new SelectThing(this._level.avatar));
 				}
 				this._level.collision.getCollisionBoxes().forEach((box) => {
 					if(this._isMouseOn(mouseX_canvas, mouseY_canvas, box) && Interface.Input.getLeftClick()) {
-						this._selectThing = new SelectThing(box);
+						this.setSelectThing(new SelectThing(box));
 					}
 				})
 				this._level.collision.getHalfTangibles().forEach((ht) => {
 					if(this._isMouseOn(mouseX_canvas, mouseY_canvas, [...ht, HALF_TANGIBLE_HEIGHT]) && Interface.Input.getLeftClick()) {
-						this._selectThing = new SelectThing(ht);
+						this.setSelectThing(new SelectThing(ht));
 					}
 				})
 			}
@@ -98,16 +130,16 @@ class Editor {
 		this._level.draw(ctx);
 		if(!this._playing) {
 			this._showGrid(ctx);
-			if(this._selectThing != null) {
+			if(this.getSelectThing() != null) {
 				var camera = this._level.getCameraTopLeft();
-				this._selectThing.draw(ctx, camera[0], camera[1]);
+				this.getSelectThing().draw(ctx, camera[0], camera[1]);
 			}
 		}
 		Interface.Input.drawButtons(ctx);
 	}
 
 	_playStop() {
-		this._selectThing = null;
+		this.unsetSelectThing();
 		if(this._playing) {
 			this._level.reset();
 		}
@@ -156,12 +188,12 @@ class Editor {
 		ctx.stroke();
 		ctx.textAlign = "center";
 		ctx.fillStyle = "#ffffff";
-		ctx.font = "bold 40px sans-serif";
+		ctx.font = "bolder 40px sans-serif";
 		ctx.fillText(String(EDITOR_GRID_SIZE * 2) + "px", x - EDITOR_GRID_SIZE, y - 20);
 	}
 
 	_changeMode(value) {
-		this._selectThing = null;
+		this.unsetSelectThing();
 		this._mode = value;
 		[this._buttonMove, this._buttonCollisions].forEach((button) => {
 			button.active = false;
@@ -176,6 +208,8 @@ class Editor {
 			default:
 				throw "value must be 'move' or 'select'."
 		}
+
+		this._syncButtons();
 	}
 
 	_syncButtons() {
@@ -183,7 +217,16 @@ class Editor {
 			Interface.Input.buttons = [this._buttonPlay];
 		}
 		else {
-			Interface.Input.buttons = [this._buttonPlay, this._buttonMove, this._buttonCollisions];
+			var bottomButtons = [];
+			switch(this._mode) {
+				case "collisions":
+					bottomButtons = [this._buttonCreateCollisionBox, this._buttonCreateHalfTangible]
+					break;
+			}
+			if(this.getSelectThing() != null && ["collisionbox", "half-tangible"].indexOf(this.getSelectThing()._type) != -1) {
+				bottomButtons.push(this._buttonRemoveSelected);
+			}
+			Interface.Input.buttons = [this._buttonPlay, this._buttonMove, this._buttonCollisions, this._buttonLoad, this._buttonSave, ...bottomButtons];
 		}
 	}
 
@@ -195,5 +238,38 @@ class Editor {
 			mouseX < box[0] + box[2] - offset[0] &&
 			mouseY < box[1] + box[3] - offset[1]
 			);
+	}
+
+	_create(type) {
+		const side = EDITOR_GRID_SIZE * 2;
+		var camera = this._level.getCameraTopLeft()
+		var obj = [
+			camera[0] + CANVAS_WIDTH  / 2 - side / 2,
+			camera[1] + CANVAS_HEIGHT / 2 - side / 2,
+			side];
+		if(type == "collisionbox")
+			obj.push(side);
+		this.setSelectThing(new SelectThing(obj));
+		switch(type) {
+			case "collisionbox":
+				this._level.collision.collisionBoxes.push(obj);
+				break;
+			case "half-tangible":
+				this._level.collision.halfTangibles.push(obj);
+				break;
+		}
+	}
+
+	getSelectThing() {
+		return this._selectThing;
+	}
+
+	setSelectThing(value) {
+		this._selectThing = value;
+		this._syncButtons();
+	}
+
+	unsetSelectThing() {
+		this.setSelectThing(null);
 	}
 }
