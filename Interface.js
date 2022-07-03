@@ -12,12 +12,12 @@ class Interface {
 	 *   Interface.Input.rightPressed
 	 */
 	static Input = class {
-		rightPressed = false;     // true si la touche est pressée
-		leftPressed = false;      //
-		upPressed = false;        //
-		leftClickPressed = false; //
-		mouseX = 0; // position actuelle du pointeur relatif au canvas
-		mouseY = 0; //
+		static rightPressed = false;     // true si la touche est pressée
+		static leftPressed = false;      //
+		static upPressed = false;        //
+		static leftClickPressed = false; //
+		static mouseX = 0; // position actuelle du pointeur relatif au canvas
+		static mouseY = 0; //
 
 		_leftClick = false;
 		/**
