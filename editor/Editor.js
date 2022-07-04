@@ -19,13 +19,9 @@ class Editor {
 			this._playStop();
 		});
 
-		this._buttonMove = new CharButton(80 + EDITOR_BUTTON_SIZE, 40, "m", 72, 80, () => {
-			this._changeMode("move");
-		}, true);
-
-		this._buttonCollisions = new CharButton(120 + 2 * EDITOR_BUTTON_SIZE, 40, "c", 72, 80, () => {
+		this._buttonCollisions = new CharButton(80 + EDITOR_BUTTON_SIZE, 40, "c", 72, 80, () => {
 			this._changeMode("collisions");
-		});
+		}, true);
 
 		this._buttonCreateCollisionBox = new CharButton(40, CANVAS_HEIGHT - EDITOR_BUTTON_SIZE - 40, "□", 100, 84, () => {
 			this._create("collisionbox");
@@ -49,17 +45,17 @@ class Editor {
 			this.unsetSelectThing();
 		});
 
-		this._buttonLoad = new CharButton(CANVAS_WIDTH - EDITOR_BUTTON_SIZE * 2 - 80, 40, "l", 72, 80, () => {
+		this._buttonLoad = new CharButton(CANVAS_WIDTH - EDITOR_BUTTON_SIZE * 2 - 80, 40, "\u{1f4c2}", 72, 86, () => {
 			if(confirm("Charger un autre niveau ? Ce niveau sera perdu s'il n'a pas été sauvegardé.")) LoadSaveLevel.loadFromFile((level) => {
 				tickObject = new Editor(level);
 			});
 		});
 
-		this._buttonSave = new CharButton(CANVAS_WIDTH - EDITOR_BUTTON_SIZE - 40, 40, "s", 72, 80, () => {
+		this._buttonSave = new CharButton(CANVAS_WIDTH - EDITOR_BUTTON_SIZE - 40, 40, "\u{1f4be}", 72, 86, () => {
 			if(confirm("Sauvegarder le niveau dans un fichier ?")) LoadSaveLevel.saveInFile(this._level);
 		});
 
-		this._mode = "move";
+		this._mode = "collisions";
 
 		this._syncButtons();
 
@@ -79,24 +75,24 @@ class Editor {
 		var mouseMoveY_canvas = mouseY_canvas - this._lastMouseY;
 
 		Interface.Input.tickButtons();
+
+		if(!this._cameraMoving && Interface.Input.rightClickPressed) {
+			this._cameraMoving = true;
+		}
+		else {
+			if(!Interface.Input.rightClickPressed) {
+				this._cameraMoving = false;
+			}
+			else {
+				this._level.cameraX -= mouseMoveX_canvas;
+				this._level.cameraY -= mouseMoveY_canvas;
+			}
+		}
+
 		if(this._playing)
 			this._level.tick();
 		else {
-			if(this._mode == "move") {
-				if(!this._cameraMoving && Interface.Input.leftClickPressed) {
-					this._cameraMoving = true;
-				}
-				else {
-					if(!Interface.Input.leftClickPressed) {
-						this._cameraMoving = false;
-					}
-					else {
-						this._level.cameraX -= mouseMoveX_canvas;
-						this._level.cameraY -= mouseMoveY_canvas;
-					}
-				}
-			}
-			else if(this._mode == "collisions") {
+			if(this._mode == "collisions") {
 				if(this.getSelectThing() != null)
 					this.getSelectThing().tick(cameraX, cameraY, mouseX_canvas, mouseY_canvas, mouseMoveX_canvas, mouseMoveY_canvas);
 
@@ -199,9 +195,6 @@ class Editor {
 			button.active = false;
 		});
 		switch(value) {
-			case "move":
-				this._buttonMove.active = true;
-				break;
 			case "collisions":
 				this._buttonCollisions.active = true;
 				break
@@ -226,7 +219,7 @@ class Editor {
 			if(this.getSelectThing() != null && ["collisionbox", "half-tangible"].indexOf(this.getSelectThing()._type) != -1) {
 				bottomButtons.push(this._buttonRemoveSelected);
 			}
-			Interface.Input.buttons = [this._buttonPlay, this._buttonMove, this._buttonCollisions, this._buttonLoad, this._buttonSave, ...bottomButtons];
+			Interface.Input.buttons = [this._buttonPlay, this._buttonCollisions, this._buttonLoad, this._buttonSave, ...bottomButtons];
 		}
 	}
 

@@ -12,10 +12,11 @@ class Interface {
 	 *   Interface.Input.rightPressed
 	 */
 	static Input = class {
-		static rightPressed = false;     // true si la touche est pressée
-		static leftPressed = false;      //
-		static upPressed = false;        //
-		static leftClickPressed = false; //
+		static rightPressed = false;      // true si la touche est pressée
+		static leftPressed = false;       //
+		static upPressed = false;         //
+		static leftClickPressed = false;  //
+		static rightClickPressed = false; //
 		static mouseX = 0; // position actuelle du pointeur relatif au canvas
 		static mouseY = 0; //
 
@@ -47,6 +48,9 @@ class Interface {
 					case "(LeftClick)":
 						Interface.Input.leftClickPressed = value;
 						break;
+					case "(RightClick)":
+						Interface.Input.rightClickPressed = value;
+						break;
 				}
 			}
 			
@@ -58,13 +62,27 @@ class Interface {
 				set(event.key, false);
 			});
 
-			Interface.Output.CANVAS.addEventListener("mousedown", () => {
-				set("(LeftClick)", true);
-				Interface.Input._leftClick = true;
+			Interface.Output.CANVAS.addEventListener("mousedown", (e) => {
+				switch(e.which) {
+					case 1:
+						set("(LeftClick)", true);
+						Interface.Input._leftClick = true;
+						break;
+					case 3:
+						set("(RightClick)", true);
+						break;
+				}
 			});
 
-			document.addEventListener("mouseup", () => {
-				set("(LeftClick)", false);
+			document.addEventListener("mouseup", (e) => {
+				switch(e.which) {
+					case 1:
+						set("(LeftClick)", false);
+						break;
+					case 3:
+						set("(RightClick)", false);
+						break;
+				}
 			});
 
 			document.addEventListener("mousemove", (e) => {
