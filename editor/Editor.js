@@ -15,22 +15,33 @@ class Editor {
 		this._lastMouseX = Interface.Input.mouseX;
 		this._lastMouseY = Interface.Input.mouseY;
 
+		// PLAY BUTTON
 		this._buttonPlay = new CharButton(40, 40, "▶", 72, 84, () => {
 			this._playStop();
 		});
 
+		// MODE BUTTONS
 		this._buttonCollisions = new CharButton(80 + EDITOR_BUTTON_SIZE, 40, "c", 72, 80, () => {
 			this._changeMode("collisions");
 		}, true);
+		this._buttonTextures = new CharButton(120 + 2*EDITOR_BUTTON_SIZE, 40, "tx", 72, 80, () => {
+			this._changeMode("textures");
+		});
 
+		// COLLISION MODE BUTTONS
 		this._buttonCreateCollisionBox = new CharButton(40, CANVAS_HEIGHT - EDITOR_BUTTON_SIZE - 40, "□", 100, 84, () => {
 			this._create("collisionbox");
 		});
-
 		this._buttonCreateHalfTangible = new CharButton(80 + EDITOR_BUTTON_SIZE, CANVAS_HEIGHT - EDITOR_BUTTON_SIZE - 40, "_", 72, 70, () => {
 			this._create("half-tangible");
 		});
 
+		// TEXTURE MODE BUTTON
+		this._buttonCreateTexture = new CharButton(40, CANVAS_HEIGHT - EDITOR_BUTTON_SIZE - 40, "+", 100, 94, () => {
+			this._create("texture");
+		});
+
+		// REMOVE BUTTON
 		this._buttonRemoveSelected = new CharButton(40, CANVAS_HEIGHT - EDITOR_BUTTON_SIZE * 2 - 80, "x", 80, 80, () => {
 			switch(this.getSelectThing()._type) {
 				case "collisionbox":
@@ -41,16 +52,20 @@ class Editor {
 					var i = this._level.collision.halfTangibles.indexOf(this.getSelectThing()._obj);
 					this._level.collision.halfTangibles.splice(i, 1);
 					break;
+				case "texture":
+					var i = this._level.textures.texs.indexOf(this.getSelectThing()._obj);
+					this._level.textures.texs.splice(i, 1);
+					break;
 			}
 			this.unsetSelectThing();
 		});
 
+		// LOAD/SAVE BUTTONS
 		this._buttonLoad = new CharButton(CANVAS_WIDTH - EDITOR_BUTTON_SIZE * 2 - 80, 40, "\u{1f4c2}", 72, 86, () => {
 			if(confirm("Charger un autre niveau ? Ce niveau sera perdu s'il n'a pas été sauvegardé.")) LoadSaveLevel.loadFromFile((level) => {
 				tickObject = new Editor(level);
 			});
 		});
-
 		this._buttonSave = new CharButton(CANVAS_WIDTH - EDITOR_BUTTON_SIZE - 40, 40, "\u{1f4be}", 72, 86, () => {
 			if(confirm("Sauvegarder le niveau dans un fichier ?")) LoadSaveLevel.saveInFile(this._level);
 		});
@@ -92,23 +107,32 @@ class Editor {
 		if(this._playing)
 			this._level.tick();
 		else {
-			if(this._mode == "collisions") {
-				if(this.getSelectThing() != null)
-					this.getSelectThing().tick(cameraX, cameraY, mouseX_canvas, mouseY_canvas, mouseMoveX_canvas, mouseMoveY_canvas);
+			if(this.getSelectThing() != null)
+				this.getSelectThing().tick(cameraX, cameraY, mouseX_canvas, mouseY_canvas, mouseMoveX_canvas, mouseMoveY_canvas);
 
-				if(this._isMouseOn(mouseX_canvas, mouseY_canvas, [this._level.avatar.x, this._level.avatar.y, AVATAR_WIDTH, AVATAR_HEIGHT]) && Interface.Input.getLeftClick()) {
-					this.setSelectThing(new SelectThing(this._level.avatar));
-				}
-				this._level.collision.getCollisionBoxes().forEach((box) => {
-					if(this._isMouseOn(mouseX_canvas, mouseY_canvas, box) && Interface.Input.getLeftClick()) {
-						this.setSelectThing(new SelectThing(box));
-					}
-				})
-				this._level.collision.getHalfTangibles().forEach((ht) => {
-					if(this._isMouseOn(mouseX_canvas, mouseY_canvas, [...ht, HALF_TANGIBLE_HEIGHT]) && Interface.Input.getLeftClick()) {
-						this.setSelectThing(new SelectThing(ht));
-					}
-				})
+			if(this._isMouseOn(mouseX_canvas, mouseY_canvas, [this._level.avatar.x, this._level.avatar.y, AVATAR_WIDTH, AVATAR_HEIGHT]) && Interface.Input.getLeftClick()) {
+				this.setSelectThing(new SelectThing(this._level.avatar));
+			}
+			switch(this._mode) {
+				case "collisions":
+					this._level.collision.getCollisionBoxes().forEach((box) => {
+						if(this._isMouseOn(mouseX_canvas, mouseY_canvas, box) && Interface.Input.getLeftClick()) {
+							this.setSelectThing(new SelectThing(box));
+						}
+					});
+					this._level.collision.getHalfTangibles().forEach((ht) => {
+						if(this._isMouseOn(mouseX_canvas, mouseY_canvas, [...ht, HALF_TANGIBLE_HEIGHT]) && Interface.Input.getLeftClick()) {
+							this.setSelectThing(new SelectThing(ht));
+						}
+					});
+					break;
+				case "textures":
+					this._level.textures.texs.forEach((tx) => {
+						if(this._isMouseOn(mouseX_canvas, mouseY_canvas, [tx.x, tx.y, tx.width, tx.height]) && Interface.Input.getLeftClick()) {
+							this.setSelectThing(new SelectThing(tx));
+						}
+					});
+					break;
 			}
 		}
 
@@ -191,15 +215,18 @@ class Editor {
 	_changeMode(value) {
 		this.unsetSelectThing();
 		this._mode = value;
-		[this._buttonMove, this._buttonCollisions].forEach((button) => {
+		[this._buttonCollisions, this._buttonTextures].forEach((button) => {
 			button.active = false;
 		});
 		switch(value) {
 			case "collisions":
 				this._buttonCollisions.active = true;
 				break
+			case "textures":
+				this._buttonTextures.active = true;
+				break
 			default:
-				throw "value must be 'move' or 'select'."
+				throw "value must be 'collisions' or 'textures'."
 		}
 
 		this._syncButtons();
@@ -215,11 +242,14 @@ class Editor {
 				case "collisions":
 					bottomButtons = [this._buttonCreateCollisionBox, this._buttonCreateHalfTangible]
 					break;
+				case "textures":
+					bottomButtons = [this._buttonCreateTexture]
+					break;
 			}
-			if(this.getSelectThing() != null && ["collisionbox", "half-tangible"].indexOf(this.getSelectThing()._type) != -1) {
+			if(this.getSelectThing() != null && ["collisionbox", "half-tangible", "texture"].indexOf(this.getSelectThing()._type) != -1) {
 				bottomButtons.push(this._buttonRemoveSelected);
 			}
-			Interface.Input.buttons = [this._buttonPlay, this._buttonCollisions, this._buttonLoad, this._buttonSave, ...bottomButtons];
+			Interface.Input.buttons = [this._buttonPlay, this._buttonCollisions, this._buttonTextures, this._buttonLoad, this._buttonSave, ...bottomButtons];
 		}
 	}
 
@@ -238,19 +268,61 @@ class Editor {
 		var camera = this._level.getCameraTopLeft()
 		var obj = [
 			camera[0] + CANVAS_WIDTH  / 2 - side / 2,
-			camera[1] + CANVAS_HEIGHT / 2 - side / 2,
-			side];
-		if(type == "collisionbox")
+			camera[1] + CANVAS_HEIGHT / 2 - side / 2];
+		if(type != "texture") {
 			obj.push(side);
-		this.setSelectThing(new SelectThing(obj));
+			if(type == "collisionbox")
+				obj.push(side);
+		}
+		var this_ = this;
+		function setSelectThing(obj) {
+			this_.setSelectThing(new SelectThing(obj));
+		}
 		switch(type) {
 			case "collisionbox":
 				this._level.collision.collisionBoxes.push(obj);
+				setSelectThing(obj);
 				break;
 			case "half-tangible":
 				this._level.collision.halfTangibles.push(obj);
+				setSelectThing(obj);
+				break;
+			case "texture":
+				var tx = this._askTexture((image) => {
+					this._level.textures.add(image, obj[0], obj[1], image.width, image.height);
+					setSelectThing(this._level.textures.texs.at(-1))
+				});
 				break;
 		}
+	}
+
+	_askTexture(after) {
+		var asktextureEl = document.getElementById("asktexture");
+		var elClone = asktextureEl.cloneNode(true);
+		asktextureEl.parentNode.replaceChild(elClone, asktextureEl);
+
+		document.getElementById("asktexture").addEventListener("submit", () => {
+			event.preventDefault();
+			document.body.dataset.asktexture = "off";
+			var files = document.getElementById("asktexture_file").files;
+			if(files.length < 1) {
+				alert("Aucun fichier importé.")
+				return;
+			}
+			if(files.length > 1) {
+				alert("Un seul fichier peut être importé en une seule fois.")
+				return;
+			}
+			var file = files[0];
+			createImageBitmap(file).then((image) => after(image));
+		});
+
+		document.getElementById("asktexture_cancel").addEventListener("click", (event) => {
+			document.body.dataset.asktexture = "off";
+			event.preventDefault();
+		});
+
+		document.body.dataset.asktexture = "on";
 	}
 
 	getSelectThing() {

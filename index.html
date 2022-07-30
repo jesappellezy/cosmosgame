@@ -12,10 +12,32 @@
 			height: 100vh;
 			overflow: hidden;
 			background: #000000;
+			color: #ffffff;
+			text-align: center;
+		}
+
+		body canvas#canvas
+		{
+			display: block;
+		}
+
+		body[data-asktexture=on] canvas#canvas
+		{
+			display: none;
+		}
+
+		body form#asktexture
+		{
+			display: none;
+		}
+
+		body[data-asktexture=on] form#asktexture
+		{
+			display: inline-block;
 		}
 	</style>
 </head>
-<body>
+<body data-asktexture="off">
 	<canvas oncontextmenu="return false" id="canvas">Mince, ton navigateur n'est pas compatible avec ce jeu...</canvas>
 	<script type="text/javascript" src="consts.js"></script>
 	<script type="text/javascript" src="AssetsLoader.js"></script>
@@ -27,7 +49,23 @@
 	<script type="text/javascript" src="Interface.js"></script>
 	<script type="text/javascript" src="level/Avatar.js"></script>
 	<script type="text/javascript" src="level/Collision.js"></script>
+	<script type="text/javascript" src="level/Textures.js"></script><!-- -->
 	<script type="text/javascript" src="level/Level.js"></script>
 	<script type="text/javascript" src="main.js"></script>
+	<form id="asktexture">
+		<fieldset>
+			<legend>Ajout d'une texture</legend>
+			<p>
+				<button id="asktexture_cancel">Retourner à l'éditeur</button>
+			</p>
+			<p>
+				<label for="asktexture_file">Texture à ajouter (fichier .png) :</label><br>
+				<input type="file" id="asktexture_file" name="asktexture_file">
+			</p>
+			<p>
+				<input type="submit" value="Ajouter la texture">
+			</p>
+		</fieldset>
+	</form>
 </body>
 </html>

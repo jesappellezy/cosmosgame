@@ -7,15 +7,27 @@ class SelectThing {
 	 *   The selected object.
 	 */
 	constructor(obj) {
-		this._type = obj instanceof Avatar ? "avatar" : (obj.length == 4 ? "collisionbox" : "half-tangible");
+		this._type = (
+			obj instanceof Avatar
+			? "avatar"
+			: (
+				obj.image != undefined
+				? "texture"
+				: (
+					obj.length == 4
+					? "collisionbox"
+					: "half-tangible"
+				)
+			)
+		);
 		this._obj = obj;
 		this._hover = null;
 		this._selected = null;
 		this._selectedPoint = null;
 		this._leftClickPressed = false;
 
-		var w = this._type == "avatar" ? null : this._getW();
-		var h = ["avatar", "half-tangible"].indexOf(this._type) != -1 ? null : this._getH();
+		var w = ["avatar", "texture"].indexOf(this._type) != -1 ? null : this._getW();
+		var h = ["avatar", "half-tangible", "texture"].indexOf(this._type) != -1 ? null : this._getH();
 		this._setDims(this._getX(), this._getY(), w, h);
 	}
 	tick(cameraX, cameraY, mouseX_canvas, mouseY_canvas) {
@@ -255,33 +267,56 @@ class SelectThing {
 	}
 
 	_getX() {
-		return this._type == "avatar" ? this._obj.x : this._obj[0];
+		return ["avatar", "texture"].indexOf(this._type) != -1 ? this._obj.x : this._obj[0];
 	}
 	_getY() {
-		return this._type == "avatar" ? this._obj.y : this._obj[1];
+		return ["avatar", "texture"].indexOf(this._type) != -1 ? this._obj.y : this._obj[1];
 	}
 	_getW() {
-		return this._type == "avatar" ? AVATAR_WIDTH : this._obj[2];
+		return (
+			this._type == "avatar"
+			? AVATAR_WIDTH
+			: (
+				this._type == "texture"
+				? this._obj.width
+				: this._obj[2]
+			)
+		);
 	}
 	_getH() {
-		return this._type == "avatar" ? AVATAR_HEIGHT : (this._type == "half-tangible" ? HALF_TANGIBLE_HEIGHT : this._obj[3]);
+		return (
+			this._type == "avatar"
+			? AVATAR_HEIGHT
+			: (
+				this._type == "texture"
+				? this._obj.height
+				: (
+					this._type == "half-tangible"
+					? HALF_TANGIBLE_HEIGHT
+					: this._obj[3])
+			)
+		);
 	}
 	_setX(value) {
-		if(this._type == "avatar") { this._obj.x = value;
-		                             this._obj.level._baseX = value; }
-		else                       this._obj[0] = value;
+		if     (this._type == "texture") { this._obj.x = value; }
+		else if(this._type == "avatar")  { this._obj.x = value;
+		                                   this._obj.level._baseX = value; }
+		else                             { this._obj[0] = value; }
 	}
 	_setY(value) {
-		if(this._type == "avatar") { this._obj.y = value;
-		                             this._obj.level._baseY = value; }
-		else                       this._obj[1] = value;
+		if     (this._type == "texture") { this._obj.y = value; }
+		else if(this._type == "avatar")  { this._obj.y = value;
+		                                   this._obj.level._baseY = value; }
+		else                             { this._obj[1] = value; }
 	}
 	_setW(value) {
-		if(this._type == "avatar") throw "Can't be called with avatar object.";
-		else                       this._obj[2] = value;
+		if     (this._type == "texture") throw "Can't be called with texture object.";
+		else if(this._type == "avatar")  throw "Can't be called with avatar object.";
+		else                             this._obj[2] = value;
 	}
 	_setH(value) {
-		if(this._type == "avatar")             throw "Can't be called with avatar object.";
+		if     (this._type == "texture")       throw "Can't be called with texture object.";
+		else if(this._type == "avatar")        throw "Can't be called with avatar object.";
 		else if(this._type == "half-tangible") throw "Can't be called with half-tangible collision.";
 		else                                   this._obj[3] = value;
 	}

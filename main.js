@@ -12,7 +12,7 @@ function main() {
 		tickObject.draw(ctx);
 	}
 
-	window.tickObject = new Editor(new Level());
+	window.tickObject = new Editor(new Level(true));
 	
 	// Boucle
 	var startTime = Date.now();

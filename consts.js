@@ -9,9 +9,9 @@
 const CANVAS_WIDTH = 2400;
 const CANVAS_HEIGHT = 1600;
 // Boîtes de collisions
-const COLLISION_COLOR = "#ff8800";
+const COLLISION_COLOR = "#ff880088";
 // Semi-tangibles 
-const HALF_TANGIBLE_COLOR = "#ffff00";
+const HALF_TANGIBLE_COLOR = "#ffff0088";
 const HALF_TANGIBLE_HEIGHT = 20;
 // Avatar (temporairement)
 const AVATAR_COLOR = "#ff77CC";
