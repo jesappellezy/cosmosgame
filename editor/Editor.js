@@ -167,9 +167,14 @@ class Editor {
 		if(this._playing) {
 			this._level.reset();
 		}
+		else {
+			this._level.setShowCollisions(this._level.showCollisions);
+			this._buttonShowCollisions.active = this._level.showCollisions;
+		}
 		this._playing = !this._playing;
 		this._buttonPlay.active = this._playing;
 		this._syncButtons();
+		this._changeMode(this._mode);
 	}
 
 	_showGrid(ctx) {
@@ -224,9 +229,11 @@ class Editor {
 		});
 		switch(value) {
 			case "collisions":
+				this._level.setShowCollisions(true);
 				this._buttonCollisions.active = true;
 				break
 			case "textures":
+				this._level.setShowCollisions(false);
 				this._buttonTextures.active = true;
 				break
 			default:
@@ -345,8 +352,6 @@ class Editor {
 
 	_switchShowCollisionsWhilePlaying() {
 		this._level.setShowCollisions(!this._level.showCollisions);
-		debugger;
 		this._buttonShowCollisions.active = this._level.showCollisions;
-		debugger;
 	}
 }
