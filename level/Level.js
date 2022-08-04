@@ -4,21 +4,13 @@
  * Représente un niveau.
  */
 class Level {
-	// Position de la caméra (qui suit l'avatar)
-	cameraX;
-	cameraY;
-	// Collisions du niveau (objet Collision)
-	collision;
-	// Avatar du niveau (objet Avatar)
-	avatar;
-	
 	constructor(showCollisions = false, baseX = 0, baseY = -200, collision = new Collision([], [ [-240, 0, 600] ]), textures = new Textures()) {
 		this._baseX = baseX;
 		this._baseY = baseY;
 
 		this.collision = collision;
 		this.textures = textures;
-		this._showCollisions = showCollisions;
+		this.showCollisions = showCollisions;
 
 		this.reset();
 		this._cameraFollowsAvatar();
@@ -52,10 +44,19 @@ class Level {
 	 */
 	reset() {
 		this.avatar = new Avatar(this._baseX, this._baseY, this);
-		this._visibleObjects = [this.textures, this.avatar];
-		if(this._showCollisions)
-			this._visibleObjects.push(this.collision);
+		this.setShowCollisions(this.showCollisions);
 		this._sorted = false;
+	}
+
+	/**
+	 * Affiche les collisions ?
+	 * value: bool
+	 */
+	setShowCollisions(value) {
+		this.showCollisions = value;
+		this._visibleObjects = [this.textures, this.avatar];
+		if(this.showCollisions)
+			this._visibleObjects.push(this.collision);
 	}
 
 	/**

@@ -11,6 +11,7 @@ class Editor {
 		this._level = level;
 		this._playing = false;
 		this._cameraMoving = false;
+		this._showCollisionsWhilePlaying = true;
 
 		this._lastMouseX = Interface.Input.mouseX;
 		this._lastMouseY = Interface.Input.mouseY;
@@ -19,6 +20,10 @@ class Editor {
 		this._buttonPlay = new CharButton(40, 40, "▶", 72, 84, () => {
 			this._playStop();
 		});
+
+		this._buttonShowCollisions = new CharButton(80 + EDITOR_BUTTON_SIZE, 40, "c", 72, 80, () => {
+			this._switchShowCollisionsWhilePlaying();
+		}, this._showCollisionsWhilePlaying);
 
 		// MODE BUTTONS
 		this._buttonCollisions = new CharButton(80 + EDITOR_BUTTON_SIZE, 40, "c", 72, 80, () => {
@@ -234,7 +239,10 @@ class Editor {
 
 	_syncButtons() {
 		if(this._playing) {
-			Interface.Input.buttons = [this._buttonPlay];
+			var buttons = [this._buttonPlay];
+			if(this._showCollisionsWhilePlaying)
+				buttons.push(this._buttonShowCollisions);
+			Interface.Input.buttons = buttons;
 		}
 		else {
 			var bottomButtons = [];
@@ -336,5 +344,11 @@ class Editor {
 
 	unsetSelectThing() {
 		this.setSelectThing(null);
+	}
+
+	_switchShowCollisionsWhilePlaying() {
+		this._showCollisionsWhilePlaying = !this._showCollisionsWhilePlaying;
+		this._level.setShowCollisions(this._showCollisionsWhilePlaying);
+		this._buttonShowCollisions.active = this._level.showCollisions;
 	}
 }
