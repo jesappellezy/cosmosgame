@@ -32,11 +32,11 @@ class Collision {
 	draw(ctx, offsetX, offsetY) {
 		ctx.fillStyle = COLLISION_COLOR;
 		this.collisionBoxes.forEach((box) => {
-			ctx.fillRectTrunc(box[0] - offsetX, box[1] - offsetY, box[2], box[3]);
+			ctx.fillRect(box[0] - offsetX, box[1] - offsetY, box[2], box[3]);
 		});
 		ctx.fillStyle = HALF_TANGIBLE_COLOR;
 		this.halfTangibles.forEach((st) => {
-			ctx.fillRectTrunc(st[0] - offsetX, st[1] - offsetY, st[2], HALF_TANGIBLE_HEIGHT);
+			ctx.fillRect(st[0] - offsetX, st[1] - offsetY, st[2], HALF_TANGIBLE_HEIGHT);
 		});
 	}
 

@@ -130,10 +130,7 @@ class Interface {
 		 * Permet de recevoir le contexte du canvas
 		 */ 
 		static getContext() {
-			var ctx = Interface.Output.CANVAS.getContext('2d');
-			ctx.fillRectTrunc = (a,b,c,d) => {
-				ctx.fillRect(Math.round(a), Math.round(b), Math.round(c), Math.round(d));
-			};
+			var ctx = Interface.Output.CANVAS.getContext('webgl-2d');
 			return ctx;
 		}
 
@@ -185,6 +182,7 @@ class Interface {
 			Interface.Output.syncSize();
 			canvas.width = CANVAS_WIDTH;
 			canvas.height = CANVAS_HEIGHT;
+			WebGL2D.enable(Interface.Output.CANVAS);
 		}
 	}
 }
