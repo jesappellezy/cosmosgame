@@ -46,7 +46,7 @@ class Avatar {
 	 */
 	draw(ctx, offsetX, offsetY) {
 		ctx.fillStyle = AVATAR_COLOR;
-		ctx.fillRectTrunc(
+		ctx.fillRect(
 			this.x - offsetX,
 			this.y - offsetY,
 			this.width,
